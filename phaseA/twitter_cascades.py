@@ -1,6 +1,7 @@
 """Phase A1 - does a calibrated cascade model reproduce real Higgs diffusion?
 
-Real cascades. For every account that posted about Higgs (authored any action, or was
+Real cascades. For a random sample of accounts that posted about Higgs (N_ROOTS, default
+20,000; the same sample seeds the simulations) (authored any action, or was
 retweeted/replied to), its cascade is the set of distinct accounts that retweeted it.
 Twitter attributes a retweet to the original author, so trees are inferred from the
 follow graph (Goel et al. 2016): an adopter's parent is the most recent account it
@@ -20,6 +21,10 @@ Models (p_uv for v following u):
                retweets (gamma-Poisson shrinkage). IN-SAMPLE for cascade size: c_u is fitted
                to the first layer of these very cascades. Judge it on depth, structural
                virality and timing, which it was not fitted to.
+
+  *_damped    the same, with transmission from adopters (generation >= 1) scaled by delta,
+               chosen on a calibration half of the roots by one statistic (share of cascades
+               reaching depth >= 2); all comparisons use the other half.
 
 Statistics compared (per cascade, distributions):
   size (follow-explained adopters), P(size = 0), tail P(size >= 10, 100)
@@ -63,6 +68,8 @@ ok = (a_ >= 0) & (b_ >= 0); a_, b_, ts, kind = a_[ok], b_[ok], ts[ok], kind[ok]
 rt = kind == 'RT'
 posted = np.zeros(n, bool); posted[a_] = True; posted[b_[rt | (kind == 'RE')]] = True
 roots_all = np.where(posted)[0]
+N_ROOTS = int(os.environ.get('N_ROOTS', 20000))     # random sample; real and simulated use the same roots
+roots_all = np.sort(rng.choice(roots_all, min(N_ROOTS, len(roots_all)), replace=False))
 # first retweet time of each (retweeter, source) pair
 R_a, R_b, R_t = a_[rt], b_[rt], ts[rt]
 o = np.lexsort((R_t, R_a, R_b)); R_a, R_b, R_t = R_a[o], R_b[o], R_t[o]
@@ -153,8 +160,9 @@ MODELS = {'uniform': np.full(m, P_UNI), 'wc': np.minimum(1, C * w_e),
           'wc_hetero': np.minimum(1, c_het[src] * w_e)}
 
 
-def simulate(ep, root):
-    on_nodes = [root]; on = {root}
+def simulate(ep, root, delta=1.0):
+    """delta < 1 damps transmission from adopters (generation >= 1) relative to the root."""
+    on = {root}; gen = 0
     frontier = np.array([root]); ftime = np.array([0.0])
     nodes, times = [], []
     while frontier.size:
@@ -162,7 +170,8 @@ def simulate(ep, root):
         if tot == 0:
             break
         offs = np.repeat(st - (np.cumsum(ln) - ln), ln) + np.arange(tot)
-        hit = rng.random(tot) < ep[offs]
+        hit = rng.random(tot) < (ep[offs] if gen == 0 else delta * ep[offs])
+        gen += 1
         if not hit.any():
             break
         tg = indices[offs[hit]]; tpar = np.repeat(ftime, ln)[hit]
@@ -178,17 +187,43 @@ def simulate(ep, root):
     return np.concatenate(nodes), np.concatenate(times)
 
 
-sims = {}
-for name, ep in MODELS.items():
-    t1 = time.time(); out = []
-    for r in roots_all:
-        nodes, times = simulate(ep, r)
+def run(ep, roots, delta=1.0):
+    out = []
+    for r in roots:
+        nodes, times = simulate(ep, r, delta)
         if nodes.size == 0:
             out.append(dict(size=0, depth=0, d1=0, sv=np.nan, t_half=np.nan)); continue
         par = infer_tree(r, nodes, times)
         out.append(tree_stats(r, nodes, times, par))
-    sims[name] = out
+    return out
+
+
+# Damping: real Higgs cascades are broadcast-dominated, so test whether adopters pass content on
+# less readily than the original poster. delta is chosen on a CALIBRATION half of the roots by
+# one statistic (share of cascades reaching depth >= 2); every model is then compared on the
+# held-out TEST half, on the statistics delta was not chosen for.
+half = rng.permutation(len(roots_all)); cal_i, test_i = np.sort(half[: len(half) // 2]), np.sort(half[len(half) // 2:])
+real_all = real; real = [real_all[i] for i in test_i]; real_cal = [real_all[i] for i in cal_i]
+def depth2(rows):
+    sz = np.array([x['size'] for x in rows]); d = np.array([x['depth'] for x in rows])
+    return float((d[sz > 0] >= 2).mean())
+target = depth2(real_cal)
+DELTAS = [1.0, 0.6, 0.4, 0.25, 0.15, 0.1, 0.05]
+chosen = {}
+for name in ('wc', 'wc_hetero'):
+    errs = {}
+    for dl in DELTAS:
+        errs[dl] = abs(depth2(run(MODELS[name], roots_all[cal_i], dl)) - target)
+    chosen[name] = min(errs, key=errs.get)
+    print('delta for %s chosen on calibration half: %s (depth>=2 target %.3f; errors %s)'
+          % (name, chosen[name], target, {k: round(v, 3) for k, v in errs.items()}))
+sims = {}
+for name, ep in MODELS.items():
+    t1 = time.time(); sims[name] = run(ep, roots_all[test_i])
     print('simulated %s [%.0fs]' % (name, time.time() - t1))
+for name in ('wc', 'wc_hetero'):
+    t1 = time.time(); sims[name + '_damped'] = run(MODELS[name], roots_all[test_i], chosen[name])
+    print('simulated %s_damped (delta %s) [%.0fs]' % (name, chosen[name], time.time() - t1))
 
 # ---------------------------------------------------------------- compare
 def arr(rows, k): return np.array([x[k] for x in rows], float)
@@ -200,7 +235,8 @@ def summary(rows):
                 share_depth_ge2=float((dep[pos_] >= 2).mean()), broadcast_share=float(d1.sum() / max(size.sum(), 1)),
                 sv_median=float(np.nanmedian(sv)), sv_p90=float(np.nanpercentile(sv, 90)),
                 t_half_median_h=float(np.nanmedian(th)))
-out = dict(models=dict(F=F, c=C, uniform_p=P_UNI, alpha=ALPHA), real=summary(real),
+out = dict(models=dict(F=F, c=C, uniform_p=P_UNI, alpha=ALPHA, delta_chosen=chosen, delta_rule='calibration half, share of cascades with depth >= 2'),
+           n_test_roots=len(test_i), real=summary(real),
            real_external_share=n_external / max(n_adopt, 1), delays_median_h=float(np.median(delays) / 3600),
            sim={k: summary(v) for k, v in sims.items()}, ks={})
 rs = arr(real, 'size'); rsv = arr(real, 'sv'); rth = arr(real, 't_half')
@@ -212,8 +248,9 @@ for k, v in sims.items():
 json.dump(out, open(os.path.join(RES, 'a1_twitter.json'), 'w'), indent=1)
 
 import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
-COL = {'real': '#222222', 'uniform': '#DD8452', 'wc': '#4C72B0', 'wc_hetero': '#C44E52'}
-LAB = {'real': 'Real (Higgs)', 'uniform': 'Uniform IC', 'wc': 'Weighted cascade', 'wc_hetero': 'WC, per-account rates (size in-sample)'}
+COL = {'real': '#222222', 'uniform': '#DD8452', 'wc': '#4C72B0', 'wc_hetero': '#C44E52', 'wc_damped': '#55A868', 'wc_hetero_damped': '#8172B3'}
+LAB = {'real': 'Real (Higgs, test half)', 'uniform': 'Uniform IC', 'wc': 'Weighted cascade', 'wc_hetero': 'WC, per-account rates (size in-sample)',
+       'wc_damped': 'WC, damped adopters', 'wc_hetero_damped': 'WC per-account, damped adopters'}
 series = {'real': real, **sims}
 fig, ax = plt.subplots(1, 4, figsize=(18, 4.6))
 for k, rows in series.items():
@@ -227,11 +264,11 @@ for k, rows in series.items():
     ax[3].semilogx(np.maximum(t, 1e-3), np.arange(len(t)) / len(t), color=COL[k], lw=2)
 ax[0].set(xlabel='Cascade size (follow-explained adopters)', ylabel='P(size >= x | size > 0)', title='Size')
 ax[1].set(xlabel='Depth j', ylabel='P(depth >= j | size > 0)', yscale='log', title='Depth')
-ax[2].set(xlabel='Structural virality (>= 5 adopters)', ylabel='CDF', title='Broadcast (low) vs viral (high)')
+ax[2].set(xlabel='Structural virality (>= 5 adopters)', ylabel='CDF', title='Broadcast (low) vs viral (high)', xscale='log')
 ax[3].set(xlabel='Hours from first to median adoption (>= 5 adopters)', ylabel='CDF', title='Timing')
 ax[0].legend(fontsize=8)
 for a in ax: a.grid(alpha=.3)
-fig.suptitle('Phase A1: calibrated cascade models vs real Higgs cascades (%d posting accounts, one simulated cascade each)' % len(roots_all),
+fig.suptitle('Phase A1: cascade models vs real Higgs cascades (held-out half: %d posting accounts, one simulated cascade each)' % len(test_i),
              x=0.01, ha='left')
 plt.tight_layout(); plt.savefig(os.path.join(RES, 'a1_twitter.png'), dpi=130, bbox_inches='tight')
 print(json.dumps(out, indent=1)); print('total %.0fs' % (time.time() - t0))

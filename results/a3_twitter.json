@@ -34,49 +34,107 @@
    },
    "p_zero_mean": 0.8647444444444444
   },
+  "single_post_wc_damped": {
+   "size": {
+    "total_var": 19.473103282839507,
+    "luck_share": 0.38922074568536136,
+    "account_share": 0.6107792543146388
+   },
+   "log1p_size": {
+    "total_var": 0.2529138643639154,
+    "luck_share": 0.37328608681886055,
+    "account_share": 0.6267139131811396
+   },
+   "p_zero_mean": 0.8284222222222222
+  },
+  "single_post_wc_hetero_damped": {
+   "size": {
+    "total_var": 2071.9531982222225,
+    "luck_share": 0.9169873240926953,
+    "account_share": 0.0830126759073047
+   },
+   "log1p_size": {
+    "total_var": 0.22758547114842084,
+    "luck_share": 0.3909321308162061,
+    "account_share": 0.6090678691837939
+   },
+   "p_zero_mean": 0.8622222222222222
+  },
   "campaign_wc": {
    "means": {
-    "top_degree": 24287.5,
-    "random_top3000_0": 2041.3333333333333,
-    "random_top3000_1": 1726.5333333333333,
-    "random_top3000_2": 993.8,
-    "random_top3000_3": 1712.0666666666666,
-    "random_top3000_4": 1654.3333333333333,
-    "random_top200_0": 9474.933333333332,
-    "random_top200_1": 8964.333333333334,
-    "random_top200_2": 8911.533333333333
+    "top_degree": 24324.733333333334,
+    "random_top3000_0": 1812.9666666666667,
+    "random_top3000_1": 3644.3,
+    "random_top3000_2": 1065.4,
+    "random_top3000_3": 1096.2,
+    "random_top3000_4": 1188.5,
+    "random_top200_0": 10645.266666666666,
+    "random_top200_1": 8130.966666666666,
+    "random_top200_2": 8901.833333333334
    },
-   "luck_sd_mean": 849.7912231638594,
-   "luck_sd_pct_of_top_degree": 3.49888305986149,
-   "strategy_range_pct_of_top_degree": 95.90818322182193
+   "luck_sd_mean": 971.9503458947901,
+   "luck_sd_pct_of_top_degree": 3.9957286790185713,
+   "strategy_range_pct_of_top_degree": 95.62009586949907
   },
   "campaign_wc_hetero": {
    "means": {
-    "top_degree": 47012.1,
-    "random_top3000_0": 1533.4,
-    "random_top3000_1": 1668.1666666666667,
-    "random_top3000_2": 11760.9,
-    "random_top3000_3": 3164.3333333333335,
-    "random_top3000_4": 3487.1666666666665,
-    "random_top200_0": 15331.333333333334,
-    "random_top200_1": 15160.866666666667,
-    "random_top200_2": 17852.6
+    "top_degree": 46592.566666666666,
+    "random_top3000_0": 4244.0,
+    "random_top3000_1": 1587.7,
+    "random_top3000_2": 4211.466666666666,
+    "random_top3000_3": 637.3666666666667,
+    "random_top3000_4": 3618.7,
+    "random_top200_0": 33636.1,
+    "random_top200_1": 13624.9,
+    "random_top200_2": 24737.066666666666
    },
-   "luck_sd_mean": 6927.952615361253,
-   "luck_sd_pct_of_top_degree": 14.736530840701125,
-   "strategy_range_pct_of_top_degree": 96.73828652623475
+   "luck_sd_mean": 6085.029064176071,
+   "luck_sd_pct_of_top_degree": 13.060085544781616,
+   "strategy_range_pct_of_top_degree": 98.63204216409342
+  },
+  "campaign_wc_damped": {
+   "means": {
+    "top_degree": 16586.9,
+    "random_top3000_0": 1305.9,
+    "random_top3000_1": 623.5666666666667,
+    "random_top3000_2": 882.0333333333333,
+    "random_top3000_3": 919.0,
+    "random_top3000_4": 1409.5666666666666,
+    "random_top200_0": 4800.166666666667,
+    "random_top200_1": 4705.9,
+    "random_top200_2": 6292.533333333334
+   },
+   "luck_sd_mean": 190.7000895323953,
+   "luck_sd_pct_of_top_degree": 1.1497030158281252,
+   "strategy_range_pct_of_top_degree": 96.2406075477234
+  },
+  "campaign_wc_hetero_damped": {
+   "means": {
+    "top_degree": 34994.63333333333,
+    "random_top3000_0": 389.7,
+    "random_top3000_1": 896.5333333333333,
+    "random_top3000_2": 848.8666666666667,
+    "random_top3000_3": 826.1666666666666,
+    "random_top3000_4": 1043.9333333333334,
+    "random_top200_0": 18591.866666666665,
+    "random_top200_1": 5196.8,
+    "random_top200_2": 7203.0
+   },
+   "luck_sd_mean": 1126.9392470636276,
+   "luck_sd_pct_of_top_degree": 3.2203202026128603,
+   "strategy_range_pct_of_top_degree": 98.8864006766752
   }
  },
  "part2": {
   "all posting accounts, launch features": {
    "n": 302206,
-   "r2_log": 0.42829375904342526,
-   "spearman": 0.36748500097660874
+   "r2_log": 0.428060422742221,
+   "spearman": 0.3673436030814596
   },
   "all posting accounts, followers only": {
    "n": 302206,
-   "r2_log": 0.39441926926899495,
-   "spearman": 0.35497217768672973
+   "r2_log": 0.39488093055622076,
+   "spearman": 0.3549447013994668
   },
   ">=5 adopters, launch features": {
    "n": 4278,

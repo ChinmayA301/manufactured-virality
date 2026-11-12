@@ -4,7 +4,9 @@ The dump is 5.6 GB. Nothing is stored locally: the zip is read over HTTP range
 requests and each .bson.gz member is decompressed and decoded on the fly,
 keeping only the columns this study uses.
 
-Outputs (in $MV_DATA, default: Google Drive "manufactured-virality-data/starscout"):
+Outputs (in $MV_DATA, default ~/projects/_data/manufactured-virality-data/starscout; a local
+working copy, since a streamed Google Drive mount corrupted large random-access reads.
+Drive keeps an archive copy - see data/README.md):
   low_activity_stars.parquet  repo, actor, t, low_activity   every star of repos StarScout examined
                                                              with its low-activity verdict
   clustered_stars.parquet     repo, actor, t, clustered      same, lockstep (CopyCatch) verdict
@@ -21,8 +23,7 @@ import pyarrow as pa, pyarrow.parquet as pq
 from remotezip import RemoteZip
 
 URL = 'https://zenodo.org/api/records/17009694/files/mongodb.zip/content'
-DRIVE = os.path.expanduser('~/Library/CloudStorage/GoogleDrive-chinmayarora2001@gmail.com/My Drive')
-OUT = os.environ.get('MV_DATA', os.path.join(DRIVE, 'manufactured-virality-data')) + '/starscout'
+OUT = os.environ.get('MV_DATA', os.path.expanduser('~/projects/_data/manufactured-virality-data')) + '/starscout'
 os.makedirs(OUT, exist_ok=True)
 CHUNK = 500_000
 

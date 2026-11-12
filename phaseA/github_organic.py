@@ -33,8 +33,7 @@ from scipy.optimize import minimize
 from scipy.stats import kstest, ks_2samp
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DRIVE = os.path.expanduser('~/Library/CloudStorage/GoogleDrive-chinmayarora2001@gmail.com/My Drive')
-DATA = os.environ.get('MV_DATA', os.path.join(DRIVE, 'manufactured-virality-data')) + '/starscout'
+DATA = os.environ.get('MV_DATA', os.path.expanduser('~/projects/_data/manufactured-virality-data')) + '/starscout'
 RES = os.path.join(HERE, '..', 'results'); os.makedirs(RES, exist_ok=True)
 MIN_STARS, CAP = 20, 20000
 # EXCLUDE_DUMPS=1 drops repos whose stars mostly (>90%) arrive within one day. ~10% of

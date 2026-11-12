@@ -3,8 +3,9 @@
 Part 1, inside the calibrated simulator (law of total variance).
   For a single post: Var(size) = E[Var(size | account)]  (luck: same account, same model,
   different random draws) + Var(E[size | account])  (who posts). Estimated on a random
-  sample of posting accounts with R draws each, under the homogeneous and the per-account
-  weighted cascade. The "who posts" share is the most any account choice can control.
+  sample of posting accounts with R draws each, under the homogeneous and per-account
+  weighted cascades, undamped and damped (adopters transmit at delta x the root's rate,
+  delta from A1; the damped models are the ones A1 found to match real cascades). The "who posts" share is the most any account choice can control.
   For a campaign (k=20 seeds): luck = sd of reach across draws for a fixed seed set;
   control = the spread of expected reach across seeding strategies.
 
@@ -67,17 +68,20 @@ def nb_ll(al):
     return (gammaln(y + al) - gammaln(al) + al * np.log(al / (al + mu)) + y * np.log(mu / (al + mu))).sum()
 grid = np.exp(np.linspace(np.log(0.01), np.log(100), 81)); ALPHA = float(grid[np.argmax([nb_ll(x) for x in grid])])
 c_het = np.full(n, C); c_het[act] = (A[act] + ALPHA) / (mass[act] + ALPHA / C)
-MODELS = {'wc': np.minimum(1, C * w_e), 'wc_hetero': np.minimum(1, c_het[src] * w_e)}
+A1 = json.load(open(os.path.join(RES, 'a1_twitter.json')))['models']['delta_chosen']   # damping chosen in A1
+MODELS = {'wc': (np.minimum(1, C * w_e), 1.0), 'wc_hetero': (np.minimum(1, c_het[src] * w_e), 1.0),
+          'wc_damped': (np.minimum(1, C * w_e), A1['wc']), 'wc_hetero_damped': (np.minimum(1, c_het[src] * w_e), A1['wc_hetero'])}
 
 
-def size(ep, seeds):
+def size(model, seeds):
+    ep, delta = model; gen = 0
     on = np.zeros(n, bool); seeds = np.unique(np.atleast_1d(seeds)); on[seeds] = True
     frontier = seeds; tot_n = 0
     while frontier.size:
         st, en = indptr[frontier], indptr[frontier + 1]; ln = en - st; tot = int(ln.sum())
         if tot == 0: break
         offs = np.repeat(st - (np.cumsum(ln) - ln), ln) + np.arange(tot)
-        tg = indices[offs[rng.random(tot) < ep[offs]]]
+        tg = indices[offs[rng.random(tot) < (ep[offs] if gen == 0 else delta * ep[offs])]]; gen += 1
         tg = np.unique(tg); tg = tg[~on[tg]]; on[tg] = True; tot_n += tg.size; frontier = tg
     return tot_n
 
