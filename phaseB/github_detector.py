@@ -21,7 +21,9 @@ Labels (per repo, needs the repo's full star history):
   negatives     StarScout's normal sample. Sub-day "dump" repos (>90% of stars within one
                 day, ~10% of the sample) are ambiguous: scored and reported, excluded from
                 the headline negatives, included in a sensitivity run.
-  hard negatives repos StarScout examined whose stars are < 2% low-activity-flagged.
+  hard negatives repos StarScout examined whose stars are < 2% low-activity-flagged,
+                size-matched to the positives (unmatched, repo size alone separates them).
+The lockstep repos with full histories all fall in 2024, so they use stratified 5-fold CV.
 Split by time: the repo's busiest day before 2024 = train, 2024 = test.
 
 Features (each repo's own star times):
@@ -42,6 +44,7 @@ import os, json, time
 import numpy as np, pandas as pd
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.metrics import roc_auc_score, average_precision_score, roc_curve
+from sklearn.model_selection import StratifiedKFold, cross_val_predict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.environ.get('MV_DATA', os.path.expanduser('~/projects/_data/manufactured-virality-data')) + '/starscout'
@@ -110,14 +113,21 @@ def recall_at_fpr(y, score, fpr_target=0.01):
     return float(np.interp(fpr_target, fpr, tpr))
 
 
-def evaluate(pos, neg, label):
+def evaluate(pos, neg, label, split='time'):
     P = pos.assign(y=1); N = neg.assign(y=0); D = pd.concat([P, N], ignore_index=True)
-    tr, te = D[D.burst_day < SPLIT], D[D.burst_day >= SPLIT]
-    res = dict(n_train=dict(pos=int(tr.y.sum()), neg=int((1 - tr.y).sum())), n_test=dict(pos=int(te.y.sum()), neg=int((1 - te.y).sum())))
+    if split == 'time':
+        tr, te = D[D.burst_day < SPLIT], D[D.burst_day >= SPLIT]
+    else:
+        tr = te = D
+    res = dict(split=split, n_train=dict(pos=int(tr.y.sum()), neg=int((1 - tr.y).sum())), n_test=dict(pos=int(te.y.sum()), neg=int((1 - te.y).sum())))
     if te.y.nunique() < 2 or tr.y.nunique() < 2:
         res['note'] = 'not enough of both classes in train/test'; return res
-    clf = HistGradientBoostingClassifier(max_iter=300, learning_rate=0.05, random_state=0).fit(tr[FEATS], tr.y)
-    p = clf.predict_proba(te[FEATS])[:, 1]
+    clf = HistGradientBoostingClassifier(max_iter=300, learning_rate=0.05, random_state=0)
+    if split == 'time':
+        clf.fit(tr[FEATS], tr.y); p = clf.predict_proba(te[FEATS])[:, 1]
+    else:   # stratified 5-fold, out-of-fold scores
+        p = cross_val_predict(clf, D[FEATS], D.y, cv=StratifiedKFold(5, shuffle=True, random_state=0), method='predict_proba')[:, 1]
+        clf.fit(D[FEATS], D.y)
     for name, sc in (('signalgraph_burst', te.sg_burst.values), ('timing_gbm', p)):
         res[name] = dict(roc_auc=float(roc_auc_score(te.y, sc)), pr_auc=float(average_precision_score(te.y, sc)),
                          recall_at_1pct_fpr=recall_at_fpr(te.y.values, sc))
@@ -135,8 +145,16 @@ out = {}
 out['LA_strict_vs_normal'] = evaluate(F_la[F_la.repo.isin(la_pos)], neg_clean, 'LA strict vs normal (no dumps)')
 out['LA_loose_vs_normal'] = evaluate(F_la[F_la.repo.isin(la_loose)], neg_clean, 'LA loose vs normal (no dumps)')
 out['LA_strict_vs_normal_with_dumps'] = evaluate(F_la[F_la.repo.isin(la_pos)], neg_all, 'LA strict vs normal (dumps as negatives)')
-out['LA_strict_vs_hardneg'] = evaluate(F_la[F_la.repo.isin(la_pos)], F_la[F_la.repo.isin(la_hardneg)], 'LA strict vs examined-but-clean (hard)')
-out['CL_vs_normal'] = evaluate(F_cl, neg_clean, 'CL (partly circular) vs normal (no dumps)')
+# hard negatives are ~100x larger than positives (size alone gives AUC 1.0): size-matched subset only
+pos_la = F_la[F_la.repo.isin(la_pos)]
+hn = F_la[F_la.repo.isin(la_hardneg) & (F_la.log_n <= pos_la.log_n.quantile(0.99))]
+out['LA_strict_vs_hardneg_sizematched'] = evaluate(pos_la, hn, 'LA strict vs examined-but-clean, size-matched')
+# the campaigns that are NOT one-day dumps: what matters once attackers stop being crude
+spread = pos_la[pos_la.top1d < 0.9]
+out['LA_strict_spread_vs_normal'] = evaluate(spread, neg_clean, 'LA strict, spread-out campaigns only (top1d<0.9)', split='cv')
+out['LA_strict_spread_vs_normal']['n_spread_campaigns'] = int(len(spread))
+# all full-history lockstep repos fall in 2024: no temporal split possible
+out['CL_vs_normal'] = evaluate(F_cl, neg_clean, 'CL (partly circular, 5-fold CV) vs normal', split='cv')
 
 # how the headline detector scores the ambiguous dumps
 clf = out['LA_strict_vs_normal'].get('_clf')
