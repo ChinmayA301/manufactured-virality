@@ -1,0 +1,97 @@
+{
+ "settings": {
+  "N_ACC": 3000,
+  "R_DRAWS": 30,
+  "K": 20,
+  "F": 20,
+  "c": 0.726229930259597,
+  "alpha": 0.4466835921509634
+ },
+ "part1": {
+  "single_post_wc": {
+   "size": {
+    "total_var": 319.0287195495062,
+    "luck_share": 0.7467914885743027,
+    "account_share": 0.2532085114256973
+   },
+   "log1p_size": {
+    "total_var": 0.38455873420653175,
+    "luck_share": 0.4421208604905289,
+    "account_share": 0.557879139509471
+   },
+   "p_zero_mean": 0.8283333333333334
+  },
+  "single_post_wc_hetero": {
+   "size": {
+    "total_var": 85318.51390473876,
+    "luck_share": 0.8974506172320452,
+    "account_share": 0.10254938276795476
+   },
+   "log1p_size": {
+    "total_var": 0.29686809130524705,
+    "luck_share": 0.43112393262254123,
+    "account_share": 0.5688760673774589
+   },
+   "p_zero_mean": 0.8647444444444444
+  },
+  "campaign_wc": {
+   "means": {
+    "top_degree": 24287.5,
+    "random_top3000_0": 2041.3333333333333,
+    "random_top3000_1": 1726.5333333333333,
+    "random_top3000_2": 993.8,
+    "random_top3000_3": 1712.0666666666666,
+    "random_top3000_4": 1654.3333333333333,
+    "random_top200_0": 9474.933333333332,
+    "random_top200_1": 8964.333333333334,
+    "random_top200_2": 8911.533333333333
+   },
+   "luck_sd_mean": 849.7912231638594,
+   "luck_sd_pct_of_top_degree": 3.49888305986149,
+   "strategy_range_pct_of_top_degree": 95.90818322182193
+  },
+  "campaign_wc_hetero": {
+   "means": {
+    "top_degree": 47012.1,
+    "random_top3000_0": 1533.4,
+    "random_top3000_1": 1668.1666666666667,
+    "random_top3000_2": 11760.9,
+    "random_top3000_3": 3164.3333333333335,
+    "random_top3000_4": 3487.1666666666665,
+    "random_top200_0": 15331.333333333334,
+    "random_top200_1": 15160.866666666667,
+    "random_top200_2": 17852.6
+   },
+   "luck_sd_mean": 6927.952615361253,
+   "luck_sd_pct_of_top_degree": 14.736530840701125,
+   "strategy_range_pct_of_top_degree": 96.73828652623475
+  }
+ },
+ "part2": {
+  "all posting accounts, launch features": {
+   "n": 302206,
+   "r2_log": 0.42829375904342526,
+   "spearman": 0.36748500097660874
+  },
+  "all posting accounts, followers only": {
+   "n": 302206,
+   "r2_log": 0.39441926926899495,
+   "spearman": 0.35497217768672973
+  },
+  ">=5 adopters, launch features": {
+   "n": 4278,
+   "r2_log": 0.48971003746720854,
+   "spearman": 0.5820693848844294
+  },
+  ">=5 adopters, launch + first-5 signal": {
+   "n": 4278,
+   "r2_log": 0.6726871689923328,
+   "spearman": 0.7284718855426111
+  },
+  ">=5 adopters, first-5 signal only": {
+   "n": 4278,
+   "r2_log": 0.37956627661569897,
+   "spearman": 0.5038498762455823
+  }
+ }
+}

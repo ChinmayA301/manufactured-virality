@@ -48,12 +48,14 @@ def docs(z, name):
             buf += d.decompress(raw)
         elif not buf:
             return
-        while len(buf) >= 4:
-            n = int.from_bytes(buf[:4], 'little')
-            if len(buf) < n:
+        pos = 0; L = len(buf)
+        while L - pos >= 4:                      # walk an offset; trim once per chunk (no O(n^2) slicing)
+            n = int.from_bytes(buf[pos:pos + 4], 'little')
+            if L - pos < n:
                 break
-            yield bson.decode(buf[:n])
-            buf = buf[n:]
+            yield bson.decode(buf[pos:pos + n])
+            pos += n
+        buf = buf[pos:]
         if not raw:
             if buf:
                 raise RuntimeError('trailing bytes in %s' % name)
