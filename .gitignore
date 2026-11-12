@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.parquet
+*.part
+*.pkl
+*.npz
+*.log
+data/raw/
+.DS_Store
