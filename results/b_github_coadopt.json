@@ -1,0 +1,111 @@
+{
+ "n_repos_matched": 19143,
+ "match_rate": 0.9974378284313429,
+ "LA_strict_vs_normal": {
+  "timing": {
+   "auc": 0.959235431174407,
+   "recall_at_1pct_fpr": 0.7429577464788732,
+   "n_pos": 284,
+   "n_neg": 1076
+  },
+  "coadoption": {
+   "auc": 0.9629365411801666,
+   "recall_at_1pct_fpr": 0.7077464788732394,
+   "n_pos": 284,
+   "n_neg": 1076
+  },
+  "timing+coadoption": {
+   "auc": 0.9931377297240693,
+   "recall_at_1pct_fpr": 0.8873239436619719,
+   "n_pos": 284,
+   "n_neg": 1076
+  }
+ },
+ "LA_loose_vs_normal": {
+  "timing": {
+   "auc": 0.9361193201572571,
+   "recall_at_1pct_fpr": 0.5485611510791367,
+   "n_pos": 556,
+   "n_neg": 1076
+  },
+  "coadoption": {
+   "auc": 0.9142716495948223,
+   "recall_at_1pct_fpr": 0.5863309352517986,
+   "n_pos": 556,
+   "n_neg": 1076
+  },
+  "timing+coadoption": {
+   "auc": 0.9772221256452087,
+   "recall_at_1pct_fpr": 0.7517985611510791,
+   "n_pos": 556,
+   "n_neg": 1076
+  }
+ },
+ "LA_strict_spread_vs_normal": {
+  "timing": {
+   "auc": 0.9527594430180044,
+   "recall_at_1pct_fpr": 0.5260115606936416,
+   "n_pos": 173,
+   "n_neg": 8852
+  },
+  "coadoption": {
+   "auc": 0.9595365927558906,
+   "recall_at_1pct_fpr": 0.6878612716763006,
+   "n_pos": 173,
+   "n_neg": 8852
+  },
+  "timing+coadoption": {
+   "auc": 0.9886214930690691,
+   "recall_at_1pct_fpr": 0.861271676300578,
+   "n_pos": 173,
+   "n_neg": 8852
+  }
+ },
+ "CL_vs_normal_descriptive": {
+  "timing": {
+   "auc": 0.9989485633672424,
+   "recall_at_1pct_fpr": 0.9718574108818011,
+   "n_pos": 7995,
+   "n_neg": 8852
+  },
+  "coadoption": {
+   "auc": 0.994288172086768,
+   "recall_at_1pct_fpr": 0.8844427767354597,
+   "n_pos": 7995,
+   "n_neg": 8852
+  },
+  "timing+coadoption": {
+   "auc": 0.9993824583089239,
+   "recall_at_1pct_fpr": 0.9843652282676673,
+   "n_pos": 7995,
+   "n_neg": 8852
+  }
+ },
+ "medians": {
+  "normal": {
+   "log_mean_other": 2.7220411037561973,
+   "share_5plus_other_same_day": 0.16435961298974996,
+   "share_20plus_other_same_day": 0.045744839862486925
+  },
+  "dump": {
+   "log_mean_other": 4.086549104930013,
+   "share_5plus_other_same_day": 1.0,
+   "share_20plus_other_same_day": 1.0
+  },
+  "LA_strict": {
+   "log_mean_other": 0.016664432170171224,
+   "share_5plus_other_same_day": 0.0,
+   "share_20plus_other_same_day": 0.0
+  },
+  "LA_loose": {
+   "log_mean_other": 1.4886008415448804,
+   "share_5plus_other_same_day": 0.04223166434984831,
+   "share_20plus_other_same_day": 0.010345319634703195
+  },
+  "CL": {
+   "log_mean_other": 3.4657359027997265,
+   "share_5plus_other_same_day": 1.0,
+   "share_20plus_other_same_day": 0.9629629629629629
+  }
+ }
+}

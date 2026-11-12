@@ -1,0 +1,97 @@
+{
+ "coverage_by_class": {
+  "CL": {
+   "repos": 7995,
+   "median_coverage": 0.014925373134328358,
+   "repos_with_10_fetched": 1693
+  },
+  "LA_loose": {
+   "repos": 832,
+   "median_coverage": 0.2534790499741787,
+   "repos_with_10_fetched": 781
+  },
+  "LA_strict": {
+   "repos": 493,
+   "median_coverage": 0.8616352201257862,
+   "repos_with_10_fetched": 400
+  },
+  "dump": {
+   "repos": 925,
+   "median_coverage": 0.014492753623188406,
+   "repos_with_10_fetched": 216
+  },
+  "hard_neg": {
+   "repos": 2276,
+   "median_coverage": 0.22848231202336355,
+   "repos_with_10_fetched": 2276
+  },
+  "normal": {
+   "repos": 8852,
+   "median_coverage": 0.21069182389937108,
+   "repos_with_10_fetched": 7448
+  }
+ },
+ "medians": {
+  "CL": {
+   "deleted_share": 0.140625,
+   "low_activity_share": 0.42105263157894735,
+   "recent_share": 0.0
+  },
+  "LA_loose": {
+   "deleted_share": 0.031413612565445025,
+   "low_activity_share": 0.75,
+   "recent_share": 0.475
+  },
+  "LA_strict": {
+   "deleted_share": 1.0,
+   "low_activity_share": 0.0,
+   "recent_share": 0.0
+  },
+  "dump": {
+   "deleted_share": 0.6889530846365379,
+   "low_activity_share": 0.3168458781362007,
+   "recent_share": 0.0
+  },
+  "hard_neg": {
+   "deleted_share": 0.018346641228548996,
+   "low_activity_share": 0.09601646327988803,
+   "recent_share": 0.015148825851701252
+  },
+  "normal": {
+   "deleted_share": 0.0,
+   "low_activity_share": 0.02564102564102564,
+   "recent_share": 0.0
+  }
+ },
+ "auc": {
+  "CL_vs_normal_profile_all": {
+   "n_pos": 1693,
+   "n_neg": 7448,
+   "auc": 0.9782361486578652,
+   "single": {
+    "deleted_share": 0.7136213323579814,
+    "low_activity_share": 0.9002810111516237,
+    "recent_share": 0.5856928177121564
+   }
+  },
+  "LA_strict_vs_normal_no_lowactivity": {
+   "n_pos": 400,
+   "n_neg": 7448,
+   "auc": 0.9911174140708916,
+   "single": {
+    "deleted_share": 0.952919575725027,
+    "recent_share": 0.5984955692803438
+   }
+  },
+  "LA_strict_vs_normal_with_lowactivity_CIRCULAR": {
+   "n_pos": 400,
+   "n_neg": 7448,
+   "auc": 0.9964646549409237,
+   "single": {
+    "deleted_share": 0.952919575725027,
+    "low_activity_share": 0.5130256444683137,
+    "recent_share": 0.5984955692803438
+   }
+  }
+ }
+}
