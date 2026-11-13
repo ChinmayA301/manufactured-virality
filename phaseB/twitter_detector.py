@@ -34,78 +34,14 @@ from sklearn.metrics import roc_auc_score, roc_curve
 HERE = os.path.dirname(os.path.abspath(__file__))
 HIGGS = os.environ.get('HIGGS_DIR', os.path.expanduser('~/projects/blog-artifacts/virality-bayesian-optimization/pipeline'))
 RES = os.path.join(HERE, '..', 'results')
-MIN_SIZE = 3
+MIN_SIZE = 3   # also in twitter_common
 rng = np.random.default_rng(31)
 t0 = time.time()
 
-z = np.load(os.path.join(HIGGS, 'follower_graph.npz'))
-indptr, indices, ids = z['indptr'].astype(np.int64), z['indices'].astype(np.int64), z['ids']
-n = len(ids); src = np.repeat(np.arange(n), np.diff(indptr))
-followers = np.diff(indptr); followees = np.bincount(indices, minlength=n)
-order = np.argsort(indices, kind='stable'); r_ptr = np.zeros(n + 1, np.int64); np.cumsum(followees, out=r_ptr[1:]); r_idx = src[order]
-
-pos = np.full(int(ids.max()) + 1, -1, np.int64); pos[ids] = np.arange(n)
-raw = np.loadtxt(gzip.open(os.path.join(HIGGS, 'higgs-activity_time.txt.gz'), 'rt'), dtype=str)
-a_, b_, ts, kind = raw[:, 0].astype(np.int64), raw[:, 1].astype(np.int64), raw[:, 2].astype(np.int64), raw[:, 3]
-ok = (a_ <= ids.max()) & (b_ <= ids.max()); a_, b_, ts, kind = pos[a_[ok]], pos[b_[ok]], ts[ok], kind[ok]
-ok = (a_ >= 0) & (b_ >= 0) & (kind == 'RT') & (a_ != b_); R_a, R_b, R_t = a_[ok], b_[ok], ts[ok].astype(float)
-o = np.lexsort((R_t, R_a, R_b)); R_a, R_b, R_t = R_a[o], R_b[o], R_t[o]
-first = np.ones(len(R_a), bool); first[1:] = (R_a[1:] != R_a[:-1]) | (R_b[1:] != R_b[:-1])
-R_a, R_b, R_t = R_a[first], R_b[first], R_t[first]
-uniq, st = np.unique(R_b, return_index=True); en = np.append(st[1:], len(R_b))
-roots = [(r, s, e) for r, s, e in zip(uniq, st, en) if e - s >= MIN_SIZE]
+import sys; sys.path.insert(0, HERE)
+from twitter_common import (roots, R_a, R_b, R_t, followers, followees, real_fol, all_off, cascade, feats,
+                            FEATS, FAMILIES, EXTERNAL)
 print('%d real cascades with >= %d retweeters [%.0fs]' % (len(roots), MIN_SIZE, time.time() - t0))
-
-tadopt = np.full(n, np.inf)
-def infer(root, nodes, times):
-    tadopt[root] = -np.inf; tadopt[nodes] = times
-    par = np.full(len(nodes), -1, np.int64)
-    for i, (v, tv) in enumerate(zip(nodes, times)):
-        f = r_idx[r_ptr[v]:r_ptr[v + 1]]
-        if f.size:
-            tf = tadopt[f]; okm = tf < tv
-            if okm.any():
-                par[i] = f[okm][np.argmax(tf[okm])]
-    tadopt[root] = np.inf; tadopt[nodes] = np.inf
-    return par
-
-# global organic delay pool (root -> adopter offsets from first adoption) for mimic timing
-all_off = np.concatenate([R_t[s:e] - R_t[s:e].min() for _, s, e in roots])
-real_fol = followers[R_a]
-
-
-def feats(root, real_nodes, real_times, real_par, fk_times, fk_follow_root, fk_fol, fk_fee):
-    k = len(fk_times)
-    times = np.concatenate([real_times, fk_times])
-    # parents: real nodes keep inferred parents (fakes are never followed); fakes -> root or external
-    par = np.concatenate([real_par, np.where(fk_follow_root, root, -1)])
-    is_fake = np.r_[np.zeros(len(real_times), bool), np.ones(k, bool)]
-    node_id = np.concatenate([real_nodes, -1 - np.arange(k)])        # fakes get negative ids
-    fol = np.concatenate([followers[real_nodes], fk_fol]); fee = np.concatenate([followees[real_nodes], fk_fee])
-    N = len(times)
-    # tree over adopters connected to root
-    o = np.argsort(times, kind='stable'); idx = {root: 0}; depth = {root: 0}; parent_of = {}
-    for i in o:
-        p = par[i]
-        if p >= 0 and p in idx:
-            idx[node_id[i]] = len(idx); depth[node_id[i]] = depth[p] + 1; parent_of[node_id[i]] = p
-    conn = [v for v in idx if v != root]
-    d = np.array([depth[v] for v in conn]) if conn else np.array([0])
-    kids = {}
-    for v, p in parent_of.items(): kids[p] = kids.get(p, 0) + 1
-    d1 = [v for v in conn if depth[v] == 1]
-    sub = {v: 1 for v in idx}
-    for v in sorted(conn, key=lambda x: -depth[x]): sub[parent_of[v]] += sub[v]
-    M = len(idx)
-    sv = 2.0 * sum(sub[v] * (M - sub[v]) for v in conn) / (M * (M - 1)) if M > 2 else 0.0
-    tt = np.sort(times); ia = np.diff(tt)
-    jh = np.searchsorted(tt, tt + 3600, side='right')
-    return dict(log_size=np.log(N), follow_share=len(conn) / N, broadcast_share=(len(d1) / len(conn)) if conn else 0.0,
-                depth=int(d.max()), sv=sv, childless_d1=(np.mean([kids.get(v, 0) == 0 for v in d1]) if d1 else 1.0),
-                top1h_share=(jh - np.arange(N)).max() / N, frac_lt60s=float((ia < 60).mean()) if N > 1 else 0.0,
-                ia_cv=float(ia.std() / ia.mean()) if N > 2 and ia.mean() > 0 else 0.0,
-                med_log_followers=float(np.median(np.log1p(fol))), zero_follower_share=float((fol == 0).mean()),
-                zero_followee_share=float((fee == 0).mean()), fake_share=k / N)
 
 
 def campaign(kind_, k, real_times):
@@ -129,25 +65,17 @@ def campaign(kind_, k, real_times):
 KINDS, KS = ['dump', 'dump_follow', 'drip', 'mimic'], [10, 50, 200]
 rows = []
 for j, (r, s, e) in enumerate(roots):
-    nodes, times = R_a[s:e], R_t[s:e]
-    par = infer(r, nodes, times)
+    nodes, times, par = cascade(r, s, e)
     base = dict(root=int(r), real_size=int(e - s))
-    rows.append(base | feats(r, nodes, times, par, np.array([]), np.zeros(0, bool), np.array([], int), np.array([], int)) | dict(y=0, kind='organic', k=0))
+    rows.append(base | feats(r, nodes, times, par) | dict(y=0, kind='organic', k=0))
     kd = KINDS[j % len(KINDS)]; kk = KS[(j // len(KINDS)) % len(KS)]      # one campaign per root, balanced design
     tm, fr, fol, fee = campaign(kd, kk, times)
-    rows.append(base | feats(r, nodes, times, par, tm, np.full(kk, fr), fol, fee) | dict(y=1, kind=kd, k=kk))
+    rows.append(base | feats(r, nodes, times, par, tm, np.full(kk, r if fr else EXTERNAL), fol, fee) | dict(y=1, kind=kd, k=kk))
     if (j + 1) % 5000 == 0:
         print('  %d/%d cascades [%.0fs]' % (j + 1, len(roots), time.time() - t0))
 D = pd.DataFrame(rows)
-# log_size is excluded: injected cascades are always larger than their organic twins, so size
-# would leak the label in this paired design (real targets' organic size is unknown).
-FEATS = ['follow_share', 'broadcast_share', 'depth', 'sv', 'childless_d1', 'top1h_share', 'frac_lt60s',
-         'ia_cv', 'med_log_followers', 'zero_follower_share', 'zero_followee_share']
-FAMILIES = {'timing': ['top1h_share', 'frac_lt60s', 'ia_cv'],
-            'structure': ['follow_share', 'broadcast_share', 'depth', 'sv', 'childless_d1'],
-            'accounts': ['med_log_followers', 'zero_follower_share', 'zero_followee_share'],
-            'all': FEATS}
-
+# log_size is excluded from FEATS (twitter_common): injected cascades are always larger than their
+# organic twins, so size would leak the label in this paired design.
 roots_u = D.root.unique(); rng.shuffle(roots_u); test_roots = set(roots_u[: len(roots_u) // 3])
 te_mask = D.root.isin(test_roots); tr, te = D[~te_mask], D[te_mask]
 def rec1(y, s):
