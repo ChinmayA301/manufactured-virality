@@ -1,0 +1,40 @@
+{
+ "n_repos": 30,
+ "surviving_only": false,
+ "survival_check": {},
+ "max_stars_per_repo": 30,
+ "repos_with_fetch_errors": 0,
+ "by_label": {
+  "CL": {
+   "n": 15,
+   "repo_still_exists": 0.06666666666666667,
+   "resolved_share": 0.5088888888888888,
+   "signal_active_share": 0.6666666666666666,
+   "median_star_age_years": 2.1793292265571527,
+   "gha_share20_median": 0.0,
+   "gql_share20_median_when_active": 0.0,
+   "abs_diff_median_when_active": 0.3357807985699736,
+   "flagged_at_0p3_gha": 0.4,
+   "flagged_at_0p3_gql_when_active": 0.0
+  },
+  "normal": {
+   "n": 15,
+   "repo_still_exists": 1.0,
+   "resolved_share": 0.5888888888888889,
+   "signal_active_share": 1.0,
+   "median_star_age_years": 4.6447638603696095,
+   "gha_share20_median": 0.0392156862745098,
+   "gql_share20_median_when_active": 0.0,
+   "abs_diff_median_when_active": 0.020833333333333332,
+   "flagged_at_0p3_gha": 0.0,
+   "flagged_at_0p3_gql_when_active": 0.0
+  }
+ },
+ "spearman_gql_vs_gha": 0.1978133031950254,
+ "resolved_vs_age": {
+  "(2, 3]": 0.545,
+  "(3, 4]": 0.7666666666666667,
+  "(4, 10]": 0.5333333333333333
+ },
+ "graphql_queries": 371
+}

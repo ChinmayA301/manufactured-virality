@@ -153,9 +153,9 @@ There are no real labels, so the test is built as follows:
   dump/drip and tested on timing-mimic campaigns: AUC 0.94, but **recall at 1% FPR only 7%**.
   This is the gap an optimising attacker will exploit. It is Phase C's starting point.
 
-## B5. Fed back into SignalGraph (local branch, not pushed)
+## B5. Fed back into SignalGraph
 
-Branch `feat/arrival-regularity-coadoption` in `~/projects/signalgraph` (commit `bdb7ebc`):
+Merged to SignalGraph main on 13 Nov 2026 (Signal-Graph PR #1):
 - **`arrival_regularity_score`** (share of sub-minute gaps), weight 0.15.
 - **`co_adoption_farm_score`** (share of stargazers starring 20+ other repos that day), weight
   0.10. It reads a new optional `StarEventInput.same_day_other_stars` field and is inactive
@@ -164,7 +164,45 @@ Branch `feat/arrival-regularity-coadoption` in `~/projects/signalgraph` (commit 
 - **Tests:** the scoring tests (5) and the API smoke tests (2) pass.
 - **Score shift:** `_weighted_sum` renormalises, so existing manipulation scores shift slightly.
 
-Not yet built: GH Archive ingestion of `same_day_other_stars` in the API.
+### B6. Measuring co-adoption live, through GitHub GraphQL (13 Nov 2026)
+
+SignalGraph now fills `same_day_other_stars` itself
+(`apps/api/app/services/coadoption_ingest.py`). For a sample of stargazers, it reads each
+account's star list newest-first and counts the other repos starred on the same UTC day. A
+per-analysis GH Archive scan would not fit the BigQuery free tier.
+
+**Validation** (`phaseB/validate_graphql_coadopt.py`; aggregates in
+`results/b_graphql_validation*.json`). The SignalGraph code was run on the same (repo, account,
+day) stars that the GH Archive measure used: 15 normal and 15 lockstep (CL) repos, 30 stars
+each, with production paging limits.
+
+| | Normal repos | Lockstep repos that still exist | Lockstep repos, any |
+|---|---|---|---|
+| Repos still on GitHub | 15 / 15 | 15 / 15 (16 of 260 checked survive) | 1 / 15 |
+| Stars resolved | 52–59% | 52% | 51% |
+| Signal active (≥ 8 resolved) | 15 / 15 | 10 / 15 | 10 / 15 |
+| Rank correlation with GH Archive (active repos) | 0.74 (pooled) | | 0.20 (pooled) |
+| Share > 0.3 by GH Archive / by GraphQL | 0% / 0% | 27% / 30% | 40% / 0% |
+
+- **Where the evidence survives, GraphQL agrees with GH Archive.** The three farm-heavy
+  surviving repos read 0.83, 0.85 and 0.86 in GH Archive and 0.90, 0.95 and 0.85 via GraphQL.
+  Normal repos stay at or below 0.10 on both.
+- **Once GitHub cleans up, the evidence is gone.** 94% of the lockstep repos checked have been
+  deleted. On those, GraphQL reads 0.00 where GH Archive read 0.54–1.00: the other
+  repos the farm accounts starred have been removed too. The signal can only catch campaigns
+  before cleanup.
+- **Cost:** about 2 s of GitHub time per account for years-old stars. Three queries in flight
+  triggered GitHub's secondary rate limit (403), so production sends one query at a time, with
+  a 30 s budget.
+
+**A bigger constraint found along the way.** Since 30 June 2026, GitHub shows a repository's
+stargazer list only to its admins and collaborators: the GraphQL `stargazers` connection returns
+0 and REST `/stargazers` returns 404 for everyone else (checked 13 Nov 2026 with two tokens).
+GH Archive's WatchEvent capture also collapsed: about 200k per day in June 2023 and 120k in June
+2025, against 0.7k–8k per day since July 2026. So per-stargazer signals (arrival timing,
+co-adoption, account age) are now only available for repos you administer, or from the
+historical archive. For other repos SignalGraph's live mode falls back to synthetic data and says so on the report
+(`ingestion_source: mock_no_stargazer_access` plus a warning banner).
 
 ## Phase B summary
 
