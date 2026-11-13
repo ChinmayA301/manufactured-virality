@@ -1,0 +1,339 @@
+{
+ "settings": {
+  "N_EVAL_T": 12,
+  "N_FINAL_T": 150,
+  "N_EVALS": 45,
+  "KS": [
+   10,
+   50
+  ],
+  "COST": {
+   "fresh": 1.0,
+   "aged": 8.0
+  },
+  "QUICK": false,
+  "n_train": 3782,
+  "n_calib": 3782,
+  "targets": {
+   "boost_small": 3159,
+   "boost_large": 625,
+   "spam": 3784
+  }
+ },
+ "default": {
+  "supervised_fpr1_boost_small": {
+   "default_detect_K50": 1.0,
+   "calib_flag_rate": 0.010047593865679535
+  },
+  "supervised_fpr1_boost_large": {
+   "default_detect_K50": 0.76,
+   "calib_flag_rate": 0.010047593865679535
+  },
+  "supervised_fpr1_spam": {
+   "default_detect_K50": 1.0,
+   "calib_flag_rate": 0.010047593865679535
+  },
+  "supervised_fpr5_boost_small": {
+   "default_detect_K50": 1.0,
+   "calib_flag_rate": 0.05023796932839767
+  },
+  "supervised_fpr5_boost_large": {
+   "default_detect_K50": 0.9133333333333333,
+   "calib_flag_rate": 0.05023796932839767
+  },
+  "supervised_fpr5_spam": {
+   "default_detect_K50": 1.0,
+   "calib_flag_rate": 0.05023796932839767
+  },
+  "anomaly_fpr1_boost_small": {
+   "default_detect_K50": 0.84,
+   "calib_flag_rate": 0.010047593865679535
+  },
+  "anomaly_fpr1_boost_large": {
+   "default_detect_K50": 0.06,
+   "calib_flag_rate": 0.010047593865679535
+  },
+  "anomaly_fpr1_spam": {
+   "default_detect_K50": 1.0,
+   "calib_flag_rate": 0.010047593865679535
+  },
+  "anomaly_fpr5_boost_small": {
+   "default_detect_K50": 1.0,
+   "calib_flag_rate": 0.05023796932839767
+  },
+  "anomaly_fpr5_boost_large": {
+   "default_detect_K50": 0.8133333333333334,
+   "calib_flag_rate": 0.05023796932839767
+  },
+  "anomaly_fpr5_spam": {
+   "default_detect_K50": 1.0,
+   "calib_flag_rate": 0.05023796932839767
+  }
+ },
+ "designs": {
+  "supervised_fpr1_boost_small_K10": {
+   "bo": {
+    "p_final": 0.02,
+    "cost_per_fake": 8.0,
+    "rechecked_feasible": true
+   },
+   "random": {
+    "p_final": 0.02666666666666667,
+    "cost_per_fake": 7.3,
+    "rechecked_feasible": true
+   }
+  },
+  "supervised_fpr1_boost_small_K50": {
+   "bo": {
+    "p_final": 0.05333333333333334,
+    "cost_per_fake": 4.36,
+    "rechecked_feasible": true
+   },
+   "random": {
+    "p_final": 0.05333333333333334,
+    "cost_per_fake": 7.58,
+    "rechecked_feasible": true
+   }
+  },
+  "supervised_fpr1_boost_large_K10": {
+   "bo": {
+    "p_final": 0.14666666666666667,
+    "cost_per_fake": 1.7,
+    "rechecked_feasible": true
+   },
+   "random": {
+    "p_final": 0.08666666666666667,
+    "cost_per_fake": 6.6,
+    "rechecked_feasible": true
+   }
+  },
+  "supervised_fpr1_boost_large_K50": {
+   "bo": {
+    "p_final": 0.06666666666666667,
+    "cost_per_fake": 6.88,
+    "rechecked_feasible": true
+   },
+   "random": {
+    "p_final": 0.06666666666666667,
+    "cost_per_fake": 7.58,
+    "rechecked_feasible": true
+   }
+  },
+  "supervised_fpr1_spam_K10": {
+   "bo": {
+    "p_final": 0.03333333333333333,
+    "cost_per_fake": 1.0,
+    "rechecked_feasible": true
+   },
+   "random": {
+    "p_final": 0.12,
+    "cost_per_fake": 6.6,
+    "rechecked_feasible": true
+   }
+  },
+  "supervised_fpr1_spam_K50": {
+   "bo": {
+    "p_final": 0.006666666666666667,
+    "cost_per_fake": 1.28,
+    "rechecked_feasible": true
+   },
+   "random": {
+    "p_final": 0.04666666666666667,
+    "cost_per_fake": 7.58,
+    "rechecked_feasible": true
+   }
+  },
+  "supervised_fpr5_boost_small_K10": {
+   "bo": {
+    "p_final": 0.04,
+    "cost_per_fake": 8.0,
+    "rechecked_feasible": true
+   },
+   "random": null
+  },
+  "supervised_fpr5_boost_small_K50": {
+   "bo": {
+    "p_final": 0.2,
+    "cost_per_fake": 6.74,
+    "rechecked_feasible": true
+   },
+   "random": null
+  },
+  "supervised_fpr5_boost_large_K10": {
+   "bo": {
+    "p_final": 0.15333333333333332,
+    "cost_per_fake": 8.0,
+    "rechecked_feasible": false
+   },
+   "random": null
+  },
+  "supervised_fpr5_boost_large_K50": {
+   "bo": {
+    "p_final": 0.17333333333333334,
+    "cost_per_fake": 8.0,
+    "rechecked_feasible": false
+   },
+   "random": null
+  },
+  "supervised_fpr5_spam_K10": {
+   "bo": {
+    "p_final": 0.08666666666666667,
+    "cost_per_fake": 7.3,
+    "rechecked_feasible": true
+   },
+   "random": null
+  },
+  "supervised_fpr5_spam_K50": {
+   "bo": {
+    "p_final": 0.04,
+    "cost_per_fake": 7.02,
+    "rechecked_feasible": true
+   },
+   "random": null
+  },
+  "anomaly_fpr1_boost_small_K10": {
+   "bo": {
+    "p_final": 0.03333333333333333,
+    "cost_per_fake": 1.0,
+    "rechecked_feasible": true
+   },
+   "random": {
+    "p_final": 0.08666666666666667,
+    "cost_per_fake": 3.8,
+    "rechecked_feasible": true
+   }
+  },
+  "anomaly_fpr1_boost_small_K50": {
+   "bo": {
+    "p_final": 0.16,
+    "cost_per_fake": 4.64,
+    "rechecked_feasible": true
+   },
+   "random": {
+    "p_final": 0.21333333333333335,
+    "cost_per_fake": 7.72,
+    "rechecked_feasible": false
+   }
+  },
+  "anomaly_fpr1_boost_large_K10": {
+   "bo": {
+    "p_final": 0.14666666666666667,
+    "cost_per_fake": 3.1,
+    "rechecked_feasible": true
+   },
+   "random": {
+    "p_final": 0.08666666666666667,
+    "cost_per_fake": 3.8,
+    "rechecked_feasible": true
+   }
+  },
+  "anomaly_fpr1_boost_large_K50": {
+   "bo": {
+    "p_final": 0.11333333333333333,
+    "cost_per_fake": 6.46,
+    "rechecked_feasible": true
+   },
+   "random": {
+    "p_final": 0.15333333333333332,
+    "cost_per_fake": 7.72,
+    "rechecked_feasible": false
+   }
+  },
+  "anomaly_fpr1_spam_K10": {
+   "bo": {
+    "p_final": 0.12,
+    "cost_per_fake": 1.7,
+    "rechecked_feasible": true
+   },
+   "random": {
+    "p_final": 0.09333333333333334,
+    "cost_per_fake": 3.8,
+    "rechecked_feasible": true
+   }
+  },
+  "anomaly_fpr1_spam_K50": {
+   "bo": {
+    "p_final": 0.02666666666666667,
+    "cost_per_fake": 6.18,
+    "rechecked_feasible": true
+   },
+   "random": {
+    "p_final": 0.14,
+    "cost_per_fake": 7.58,
+    "rechecked_feasible": true
+   }
+  },
+  "anomaly_fpr5_boost_small_K10": {
+   "bo": {
+    "p_final": 0.0,
+    "cost_per_fake": 8.0,
+    "rechecked_feasible": true
+   },
+   "random": null
+  },
+  "anomaly_fpr5_boost_small_K50": {
+   "bo": {
+    "p_final": 0.04,
+    "cost_per_fake": 7.44,
+    "rechecked_feasible": true
+   },
+   "random": null
+  },
+  "anomaly_fpr5_boost_large_K10": {
+   "bo": {
+    "p_final": 0.15333333333333332,
+    "cost_per_fake": 8.0,
+    "rechecked_feasible": true
+   },
+   "random": null
+  },
+  "anomaly_fpr5_boost_large_K50": {
+   "bo": {
+    "p_final": 0.15333333333333332,
+    "cost_per_fake": 7.86,
+    "rechecked_feasible": false
+   },
+   "random": null
+  },
+  "anomaly_fpr5_spam_K10": {
+   "bo": {
+    "p_final": 0.0,
+    "cost_per_fake": 8.0,
+    "rechecked_feasible": true
+   },
+   "random": null
+  },
+  "anomaly_fpr5_spam_K50": {
+   "bo": {
+    "p_final": 0.8466666666666667,
+    "cost_per_fake": 6.74,
+    "rechecked_feasible": false
+   },
+   "random": null
+  }
+ },
+ "adaptive": {
+  "scenario": "boost_large",
+  "K": 50,
+  "rounds": [
+   {
+    "round": 0,
+    "attacker_cost_per_fake": 7.3,
+    "p_det_vs_current": 0.0,
+    "same_campaign_p_det_after_retrain": 0.5533333333333333
+   },
+   {
+    "round": 1,
+    "attacker_cost_per_fake": 7.86,
+    "p_det_vs_current": 0.08,
+    "same_campaign_p_det_after_retrain": 0.82
+   },
+   {
+    "round": 2,
+    "attacker_cost_per_fake": 7.86,
+    "p_det_vs_current": 0.16,
+    "same_campaign_p_det_after_retrain": 0.3466666666666667
+   }
+  ]
+ }
+}

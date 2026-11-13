@@ -65,7 +65,7 @@
     "p_noisy": 0.0,
     "p_final": 0.0,
     "cost_per_star": 0.632,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      2.944,
      2.944,
@@ -115,10 +115,10 @@
     ]
    },
    "random": {
-    "p_noisy": 0.5,
-    "p_final": 0.6166666666666667,
-    "cost_per_star": 0.7519999999999999,
-    "feasible_noisy": true,
+    "p_noisy": 0.0,
+    "p_final": 0.0,
+    "cost_per_star": 1.58,
+    "rechecked_feasible": true,
     "curve": [
      4.356,
      4.356,
@@ -173,7 +173,7 @@
     "p_noisy": 0.0,
     "p_final": 0.0,
     "cost_per_star": 0.904,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      Infinity,
      Infinity,
@@ -226,7 +226,7 @@
     "p_noisy": 0.0,
     "p_final": 0.0,
     "cost_per_star": 1.3840000000000001,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      Infinity,
      4.196000000000001,
@@ -281,7 +281,7 @@
     "p_noisy": 0.0,
     "p_final": 0.0,
     "cost_per_star": 0.64,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      Infinity,
      Infinity,
@@ -334,7 +334,7 @@
     "p_noisy": 0.0,
     "p_final": 0.016666666666666666,
     "cost_per_star": 1.225,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      4.6819999999999995,
      2.075,
@@ -389,7 +389,7 @@
     "p_noisy": 0.0,
     "p_final": 0.0,
     "cost_per_star": 0.748,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      3.761,
      3.761,
@@ -442,7 +442,7 @@
     "p_noisy": 0.0,
     "p_final": 0.0,
     "cost_per_star": 1.251,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      6.04,
      6.04,
@@ -497,7 +497,7 @@
     "p_noisy": 0.0,
     "p_final": 0.0,
     "cost_per_star": 0.6611999999999999,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      Infinity,
      Infinity,
@@ -550,7 +550,7 @@
     "p_noisy": 0.0,
     "p_final": 0.016666666666666666,
     "cost_per_star": 1.0802,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      Infinity,
      Infinity,
@@ -605,7 +605,7 @@
     "p_noisy": 0.0,
     "p_final": 0.0,
     "cost_per_star": 0.6043999999999999,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      Infinity,
      Infinity,
@@ -656,9 +656,9 @@
    },
    "random": {
     "p_noisy": 0.0,
-    "p_final": 0.18333333333333332,
-    "cost_per_star": 1.1504,
-    "feasible_noisy": true,
+    "p_final": 0.0,
+    "cost_per_star": 2.8886,
+    "rechecked_feasible": true,
     "curve": [
      7.804600000000001,
      7.804600000000001,
@@ -713,7 +713,7 @@
     "p_noisy": 0.0,
     "p_final": 0.008333333333333333,
     "cost_per_star": 0.6,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      2.944,
      2.944,
@@ -766,7 +766,7 @@
     "p_noisy": 0.0,
     "p_final": 0.016666666666666666,
     "cost_per_star": 0.792,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      4.356,
      4.356,
@@ -821,7 +821,7 @@
     "p_noisy": 0.0,
     "p_final": 0.0,
     "cost_per_star": 0.6,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      1.044,
      1.044,
@@ -874,7 +874,7 @@
     "p_noisy": 0.0,
     "p_final": 0.008333333333333333,
     "cost_per_star": 0.76,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      4.584,
      4.584,
@@ -929,7 +929,7 @@
     "p_noisy": 0.08333333333333333,
     "p_final": 0.05,
     "cost_per_star": 0.6,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      1.4409999999999998,
      1.4409999999999998,
@@ -982,7 +982,7 @@
     "p_noisy": 0.25,
     "p_final": 0.125,
     "cost_per_star": 1.173,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      4.6819999999999995,
      4.6819999999999995,
@@ -1037,7 +1037,7 @@
     "p_noisy": 0.0,
     "p_final": 0.0,
     "cost_per_star": 0.602,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      3.761,
      3.761,
@@ -1090,7 +1090,7 @@
     "p_noisy": 0.0,
     "p_final": 0.008333333333333333,
     "cost_per_star": 1.046,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      6.04,
      6.04,
@@ -1145,7 +1145,7 @@
     "p_noisy": 0.0,
     "p_final": 0.0,
     "cost_per_star": 0.63,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      Infinity,
      Infinity,
@@ -1195,10 +1195,10 @@
     ]
    },
    "random": {
-    "p_noisy": 0.25,
-    "p_final": 0.5,
-    "cost_per_star": 0.8152,
-    "feasible_noisy": true,
+    "p_noisy": 0.0,
+    "p_final": 0.008333333333333333,
+    "cost_per_star": 1.0028,
+    "rechecked_feasible": true,
     "curve": [
      3.2422,
      3.2422,
@@ -1253,7 +1253,7 @@
     "p_noisy": 0.0,
     "p_final": 0.0,
     "cost_per_star": 0.6591999999999999,
-    "feasible_noisy": true,
+    "rechecked_feasible": true,
     "curve": [
      Infinity,
      6.6976,
@@ -1303,10 +1303,10 @@
     ]
    },
    "random": {
-    "p_noisy": 0.0,
-    "p_final": 0.1,
-    "cost_per_star": 1.8042,
-    "feasible_noisy": true,
+    "p_noisy": 0.16666666666666666,
+    "p_final": 0.11666666666666667,
+    "cost_per_star": 0.8714,
+    "rechecked_feasible": true,
     "curve": [
      7.804600000000001,
      4.537,
@@ -1562,13 +1562,13 @@
    "default_dump_detect": 0.08333333333333333,
    "evasion_cost_per_star": [
     0.818,
-    0.685,
-    0.655
+    0.7240000000000001,
+    0.6819999999999999
    ],
    "p_final": [
     0.03333333333333333,
-    0.20833333333333334,
-    0.10833333333333334
+    0.0,
+    0.025
    ],
    "feasible": [
     true,
@@ -1580,12 +1580,12 @@
    "untouched_target_flag_rate": 0.04275092936802974,
    "default_dump_detect": 1.0,
    "evasion_cost_per_star": [
-    0.6919999999999998,
+    0.71,
     0.685,
     0.6509999999999999
    ],
    "p_final": [
-    0.19166666666666668,
+    0.025,
     0.06666666666666667,
     0.03333333333333333
    ],
@@ -1657,12 +1657,12 @@
    "default_dump_detect": 1.0,
    "evasion_cost_per_star": [
     1.2209999999999999,
-    2.7230000000000003,
+    1.2670000000000001,
     4.6739999999999995
    ],
    "p_final": [
     0.058333333333333334,
-    0.03333333333333333,
+    0.13333333333333333,
     0.10833333333333334
    ],
    "feasible": [

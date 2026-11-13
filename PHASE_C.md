@@ -1,5 +1,12 @@
 # Phase C results: what does evading the detector cost? (12 Nov 2026)
 
+Part 1 covers GitHub, Part 2 covers Twitter. Both use a winner's-curse guard: before a
+winner is chosen, the five cheapest candidates that looked feasible on 12 targets are
+re-checked on 40 fresh targets. Every reported winner is then re-evaluated on 120–150 fresh
+targets.
+
+# Part 1: GitHub
+
 **Simulation only.** No real accounts, repositories or campaigns were touched. This file and
 `results/c_github.json` hold aggregated outcomes only. The attacker's optimised settings live
 only in the local data directory (`$MV_DATA/phaseC_private/`) and are not published, per the
@@ -72,7 +79,7 @@ optimisation: an expensive, noisy black box with no exploitable structure.
 | Anomaly, 5% target | 8.2% | 36% | 0.69, 0.76, 0.77 |
 | **Anomaly, trimmed reference** | 7.8% | **68%** | **0.94, 1.10, 6.42** |
 
-Spam scenario, trimmed reference: 1.22, 2.72, 4.67 per star; every other design 0.62–0.82.
+Spam scenario, trimmed reference: 1.22, 1.27, 4.67 per star; every other design 0.62–0.82.
 
 - **The anomaly detector is unsupervised.** It flags repos whose co-adoption mix or minute-scale
   arrival pattern is extreme in either direction, relative to normal repos.
@@ -81,8 +88,8 @@ Spam scenario, trimmed reference: 1.22, 2.72, 4.67 per star; every other design 
   set on them sits inside the campaign region.
 - **Trimming the reference is what forces cost up.** The trimmed variant drops "suspect normals"
   (farm share > 50% or sub-minute share > 20%, a rule fixed in advance) before setting the
-  threshold. That forces the attacker towards aged accounts, raising the median price 2–5× and
-  up to 11× in one run, and catches 68% of naive boosts.
+  threshold. That forces the attacker towards aged accounts, raising the median price about 2× and up to
+  11× in one run, and catches 68% of naive boosts.
 - **The price of trimming:** 7.8% of untouched real repos get flagged, against 1.5%. The spread
   across runs is wide; some BO runs still find a cheap gap.
 
@@ -117,5 +124,93 @@ show no stable escalation in either direction.
   deletions.
 - **Small study:** a 4-dimensional attacker, 3 BO runs per design, 3 adaptive rounds. Ranges
   are wide.
-- **GitHub only.** The Twitter game (attacker choosing fake count, follow behaviour and timing
-  against the Phase B4 detector) has not been run.
+
+# Part 2: Twitter
+
+Script: `phaseC/twitter_game.py`; results: `results/c_twitter.json`. The cascade code is shared
+with Phase B4 (`phaseB/twitter_common.py`).
+
+## Set-up
+
+- **Targets.** Real Higgs cascades, split by root account three ways:
+  - defender training (3,782);
+  - threshold calibration (3,782);
+  - targets (3,784): 3,159 small cascades (3–19 organic retweeters) and 625 large (20+).
+- **Three scenarios:**
+  - **Boost small:** inject into a small real cascade.
+  - **Boost large:** inject into a large real cascade.
+  - **Spam:** the post has no organic retweeters; the campaign is the whole cascade.
+- **No realism gate is possible.** There are no real Twitter manipulation labels. The default
+  campaign is Phase B4's crude "dump that follows the target" (fresh accounts, one-hour burst).
+- **Attacker** (five settings in [0, 1], K = 10 or 50 fake retweets):
+  - timing mimicry;
+  - burst window;
+  - share of fakes following the target;
+  - share of **aged** accounts (follower and followee counts drawn from real adopters);
+  - share of fakes **chained** under other fakes (sockpuppets following each other, which gives
+    fakes children and depth).
+- **Prices** (an assumption): fresh 1, aged 8.
+- **Defenders,** at 1% and 5% false-flag thresholds on calibration cascades:
+  - supervised, trained on B4's archetypes injected into training cascades;
+  - unsupervised anomaly detector.
+
+## Results
+
+Cost per fake for detection ≤ 10%. "≈" marks runs whose fresh re-evaluation came out at
+11–20%; "✗" marks runs where no candidate passed the re-check.
+
+| Defender | Scenario | Naive dump caught | K = 10 | K = 50 |
+|---|---|---|---|---|
+| Supervised, 1% | Boost small | 100% | 8.00 | 4.36 |
+| | Boost large | 76% | 1.70 ≈ | 6.88 |
+| | Spam | 100% | **1.00** | **1.28** |
+| Supervised, 5% | Boost small | 100% | 8.00 | 6.74 ≈ |
+| | Boost large | 91% | 8.00 ✗ | 8.00 ✗ |
+| | Spam | 100% | 7.30 | 7.02 |
+| Anomaly, 1% | Boost small | 84% | **1.00** | 4.64 ≈ |
+| | Boost large | 6% | 3.10 ≈ | 6.46 ≈ |
+| | Spam | 100% | 1.70 ≈ | 6.18 |
+| Anomaly, 5% | Boost small | 100% | 8.00 | 7.44 |
+| | Boost large | 81% | 8.00 ≈ | 7.86 ✗ |
+| | Spam | 100% | 8.00 | 6.74 ✗ (85% detected) |
+
+1. **On Twitter, evasion usually means buying aged accounts.** Against most defender and
+   scenario pairs, the cheapest campaign that keeps detection near 10% is mostly or entirely
+   aged accounts: 4–8× the cheapest price. At 5% false flags it is often impossible within
+   this attacker's options. On GitHub the same goal cost about the cheapest price.
+2. **The difference is what the detector can see.** The Twitter detector sees the follow
+   graph (who is follow-explained, who has children, how deep cascades go) and account
+   follower counts. That is account-level and structural evidence. The GitHub detector sees
+   only timing and same-day co-adoption aggregates, which cheap accounts can match.
+3. **Two cheap holes remain:**
+   - **Fake-only cascades against the supervised detector** (1.00–1.28 per fake). It was
+     trained only on injections into real cascades, so an all-fake cascade falls outside what
+     it learned. This is the same failure as on GitHub, mirrored.
+   - **Small injections into small cascades against the anomaly detector** (10 fakes at the
+     cheapest price). They stay inside the organic envelope.
+4. **BO again beats random search** in most cells: for example 4.36 vs 7.58 per fake, 1.00 vs
+   6.60, and 1.00 vs 3.80.
+5. **Adaptive rounds** (supervised, boost large, K = 50): the attacker pays 7.3–7.9 per fake
+   each round, close to all aged accounts. Each retrained defender catches 35–82% of the
+   previous round's campaign.
+
+## The caveat that matters most
+
+**Aged fakes here copy real adopters' follower counts, but nobody real follows them,** so they
+can never trigger real retweets. A real aged or bought account with real followers could, and
+the "fakes have no organic children" tell would weaken. **This simulation likely overstates
+how hard Twitter evasion is.** A fair test needs a model of what bought accounts' real
+audiences do.
+
+# What Phase C shows across both domains
+
+- **Detectors trained on observed campaigns are evaded almost for free** by an optimising
+  attacker whenever their features can be matched with cheap accounts: timing on both
+  domains, co-adoption aggregates on GitHub. They are also evaded by scenarios outside their
+  training data: boosting real repos on GitHub, fake-only cascades on Twitter.
+- **Cost rises only when the defender's evidence is account-level or structural:** the social
+  graph on Twitter, and on GitHub co-adoption measured against a cleaned definition of
+  normal. Then the attacker must buy accounts that behave like real ones (4–8× here).
+- **The price is false flags** (about 8% on GitHub with a trimmed reference; the 5% thresholds
+  on Twitter), plus the modelling caveats above. For a diligence tool like SignalGraph, that
+  supports "review this" signals backed by account-level evidence over automated verdicts.

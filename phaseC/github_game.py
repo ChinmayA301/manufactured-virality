@@ -200,10 +200,17 @@ def optimise(method, K, x_target, defender, seed, scenario='boost'):
             cand = r.random((2000, 4)); th = cand[np.argmax(ei(cand, gp, max(Y)))]
         p, c = evaluate(th, K, defender, N_EVAL_T, r, scenario=scenario)
         X.append(th); Y.append(objective(p, c, K, x_target)); P.append(p); Cc.append(c)
-    ok = [i for i in range(len(X)) if P[i] <= x_target]
-    best = min(ok, key=lambda i: Cc[i]) if ok else int(np.argmin(P))
+    # winner's-curse guard: re-check the 5 cheapest noisy-feasible candidates on 40 fresh targets
+    ok = [i for i in range(len(X)) if P[i] <= x_target + 0.1]
+    rc = np.random.default_rng(seed + 555); best = None; passed = False
+    for i in sorted(ok, key=lambda i: Cc[i])[:5]:
+        p40, _ = evaluate(X[i], K, defender, 40, rc, scenario=scenario)
+        if p40 <= x_target:
+            best = i; passed = True; break
+    if best is None:
+        best = int(np.argmin(P))
     pf, cf = evaluate(X[best], K, defender, N_FINAL_T, np.random.default_rng(seed + 999), scenario=scenario)   # fresh re-evaluation
-    return dict(theta=X[best].tolist(), p_noisy=P[best], p_final=pf, cost_per_star=cf / K, feasible_noisy=bool(ok),
+    return dict(theta=X[best].tolist(), p_noisy=P[best], p_final=pf, cost_per_star=cf / K, rechecked_feasible=passed,
                 curve=np.minimum.accumulate([Cc[i] / K if P[i] <= x_target else np.inf for i in range(len(X))]).tolist())
 
 
@@ -334,11 +341,11 @@ for name, dfn in designs.items():
         dd = evaluate(DEFAULT, 200, dfn, N_FINAL_T, np.random.default_rng(3), scenario=sc)[0]
         out['designs']['%s_%s' % (name, sc)] = dict(untouched_target_flag_rate=fpr_t, default_dump_detect=dd,
                                                     evasion_cost_per_star=[x['cost_per_star'] for x in rr],
-                                                    p_final=[x['p_final'] for x in rr], feasible=[x['feasible_noisy'] for x in rr])
+                                                    p_final=[x['p_final'] for x in rr], feasible=[x['rechecked_feasible'] for x in rr])
         private['design_%s_%s' % (name, sc)] = [x['theta'] for x in rr]
         print('design %-10s %-5s untouched flagged %.3f | default dump detected %.2f | evasion cost/star %s (P_det %s, feasible %s) [%.0fs]'
               % (name, sc, fpr_t, dd, [round(x['cost_per_star'], 2) for x in rr], [round(x['p_final'], 2) for x in rr],
-                 [x['feasible_noisy'] for x in rr], time.time() - t0))
+                 [x['rechecked_feasible'] for x in rr], time.time() - t0))
 
 # cost-model sensitivity: re-price the attacker's chosen mixes with aged accounts at 4x and 16x
 out['cost_sensitivity_note'] = 'cost per star is linear in prices; with aged at 4/16 instead of 8, costs scale by the aged share of each mix'
